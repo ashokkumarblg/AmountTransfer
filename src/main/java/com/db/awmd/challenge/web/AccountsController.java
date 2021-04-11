@@ -46,5 +46,15 @@ public class AccountsController {
     log.info("Retrieving account for id {}", accountId);
     return this.accountsService.getAccount(accountId);
   }
+  
+  @PostMapping(path = "/updateAccount", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> updateAccount(@RequestBody @Valid Account account) {
+    log.info("Updating account {}", account);
 
+    try {
+    	return this.accountsService.updateAccount(account);
+    } catch (Exception ex) {
+    	return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+  }
 }

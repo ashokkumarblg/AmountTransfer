@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.db.awmd.challenge.domain.Transfer;
-import com.db.awmd.challenge.service.AccountsService;
+import com.db.awmd.challenge.service.TransferService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,11 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TransferController {
 	
-	private final AccountsService accountsService;
+	private final TransferService transferService;
 	
 	@Autowired
-	public TransferController(AccountsService accountsService) {
-		this.accountsService = accountsService;
+	public TransferController(TransferService transferService) {
+		this.transferService = transferService;
 	}
 	
 	@PostMapping(path = "/transferMoney", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -31,7 +31,7 @@ public class TransferController {
 		log.info("Transfering amount ... ");
 		
 		try {
-			return accountsService.transferMoney(transferBalance);
+			return this.transferService.transferMoney(transferBalance);
 		} catch (Exception ex) {
 			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 		}
