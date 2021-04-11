@@ -105,14 +105,43 @@ public class AccountsControllerTest {
   }
   
   	@Test
-	public void transferMoneyNoBody() throws Exception {
-		this.mockMvc.perform(post("/v1/accounts/transferMoney").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+	public void updateAccountNoBody() throws Exception {
+  		String fromAccountId = "Id-" + System.currentTimeMillis();
+		Account account = new Account(fromAccountId, new BigDecimal("0"));
+		this.accountsService.createAccount(account);
+		
+		this.mockMvc.perform(post("/v1/accounts/updateAccount").contentType(MediaType.APPLICATION_JSON)
+		.content("{\"accountId\":\""+fromAccountId+"\",\"balance\":0}"))
+		.andExpect(status().isBadRequest());
 	}
   	
   	@Test
-    public void transferMoneyNegativeBalance() throws Exception {
-      this.mockMvc.perform(post("/v1/accounts/transferMoney").contentType(MediaType.APPLICATION_JSON)
+    public void updateAccountNegativeBalance() throws Exception {
+      this.mockMvc.perform(post("/v1/accounts/updateAccount").contentType(MediaType.APPLICATION_JSON)
         .content("{\"accountId\":\"Id-123\",\"balance\":-1000}")).andExpect(status().isBadRequest());
     }
+  	
+  	@Test
+	public void updateAccountNoAccountId() throws Exception {
+		Account account = new Account("1234", new BigDecimal("100"));
+		
+		this.accountsService.updateAccount(account);
+		
+		this.mockMvc.perform(post("/v1/accounts/updateAccount").contentType(MediaType.APPLICATION_JSON)
+		.content("{\"accountId\":1212\",\"balance\":500}"))
+		.andExpect(status().isBadRequest());
+	}
+  	
+  	@Test
+    public void updateAccount() throws Exception {		
+		String fromAccountId = "Id-" + System.currentTimeMillis();
+		Account account1 = new Account(fromAccountId, new BigDecimal("123.45"));
   
+		this.accountsService.createAccount(account1);
+        
+        this.mockMvc.perform(post("/v1/accounts/updateAccount").contentType(MediaType.APPLICATION_JSON)
+        .content("{\"accountId\":\""+fromAccountId+"\",\"balance\":1000}")).andExpect(status().isOk());
+        
+        //this.accountsService.updateAccount(account1);      
+    }
 }
